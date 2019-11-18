@@ -1,43 +1,19 @@
 use std::process;
 use std::f64;
-use std::io;
-
-//  General strategy for controlling floating point error:
-//  Where possible, include integer with its SI prefix:
-//  such as 33 n instead of 0.000000033
-//  or such as 10 m instead of 0.01
-//  This will be especially helpful controlling string outputs of floats to a controlled resolution.
 
 #[derive (Clone)]
 pub struct Measurement {                    // A measurement is incomplete without a statement of uncertainty
     pub value:          f64,                // The measurement
     pub unit:           String,             // The unit of measure
-    pub resolution:     f64,
-//    pub setup:          Setup,              // UUT settings to repeat the measurement
+    pub resolution:     f64,                // exact resolution in context of chosen unit of measure
     pub uncert:         Uncert,             // The statement of uncertainty expressed in like units as the measurement
 }
-
-/************************************************************************************************************
-pub struct Setup {
-    pub nominal:        f64,
-    pub tolerance:      (f64, f64),
-    pub range:          (String, f64, f64), // Programming name for range, range min, range max
-    pub resolution:     (u64, String),      // Resolution of measurement, SI prefix
-    pub freq:           Option<Freq>,
-    pub options:        Option<String>,     // Things like "50Ω term AC coupled" or "100 NPLC" or "1MΩ input impedence", etc.
-}
-
-pub enum Freq {
-    DC,
-    HZ(u64, String),
-}
-************************************************************************************************************/
 
 #[derive (Clone)]
 pub struct Uncert {
     pub estimate:       Option<f64>,        // Estimate after being figured
-    pub unit:           Option<String>,
-    pub comps:          Vec<Component>,
+    pub unit:           Option<String>,     // Really just the SI prefix. Formatted to hold the Unit of Measure later
+    pub comps:          Vec<Component>,     // Uncertainty components
 }
 
 #[derive (Clone)]
@@ -86,10 +62,10 @@ impl Measurement {
         //  Parse the file line by line
         for vector in f_str_vec {
             match vector[0].chars().next().unwrap() {
-                '0'..='9' | '-' | '~'   => wrk_comps.comps.push(prs_comp(vector)),//  Uncertainty Component lines
-                '!'                     => meas = get_meas(vector),    //  First used line; less common than other lines
                 '#' | '?'               => continue,    //  Skip comment lines in the source file for now
-                _                       => process::exit(2),
+                '0'..='9' | '-' | '~'   => wrk_comps.comps.push(prs_comp(vector)),//  Uncertainty Component lines
+                '!'                     => meas = get_meas(vector),     //  First used line; less common than other lines
+                _                       => process::exit(2),            //  Your file is bad and you should feel bad. Read the file rules.
             }
         }
         
@@ -110,9 +86,7 @@ impl Measurement {
         }
     }
 
-
-//  This basically does what I want, except it is still subject to the float rounding error.
-//  Probably have to build a string-based hand-rounding method.
+//  
     pub fn value_string(self) -> String {
         let rounded_val = self.value;
         let mut res = self.resolution;
@@ -215,7 +189,7 @@ pub fn get_uncert_unit(value: f64, meas_unit: String) -> Option<(u64, String)> {
         prefix = Some(match_prefix(pre.next().unwrap()));
     }
     
-    let mut fig: f64 = value;
+    let mut fig = value;
     let mut mag: i64 = 0;
 
     while fig > 9905.0 {
@@ -250,7 +224,7 @@ impl Uncert {
     pub fn rss(&self) -> f64 {
 //  Combine uncertainty components, return as k=2
         let val = self.clone();
-        let mut wrk_sum = 0f64;
+        let mut wrk_sum = 0.0;
         for value in val.comps.iter() {
             let distr = value.get_divisor();
             let eval = value.get_estimate();
@@ -415,10 +389,10 @@ mod tests {
 
     #[test]
     fn get_uncert_unit_test() {
-        assert_eq!(get_uncert_unit(0.00032f64,String::from("A")),Some((320,String::from("µ"))));
-        assert_eq!(get_uncert_unit(32f64,String::from("MΩ")),Some((32,String::from("M"))));
-        assert_eq!(get_uncert_unit(3200f64,String::from("MΩ")),Some((3200,String::from("M"))));
-        assert_eq!(get_uncert_unit(10f64,String::from("Ω")),Some((10,String::from(" "))));
+        assert_eq!(get_uncert_unit(0.00032,String::from("A")),Some((320,String::from("µ"))));
+        assert_eq!(get_uncert_unit(32.0,String::from("MΩ")),Some((32,String::from("M"))));
+        assert_eq!(get_uncert_unit(3200.0,String::from("MΩ")),Some((3200,String::from("M"))));
+        assert_eq!(get_uncert_unit(10.0,String::from("Ω")),Some((10,String::from(" "))));
     }
 
     #[test]
