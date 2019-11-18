@@ -1,0 +1,48 @@
+?,Primary Rules for *.ucrt files:
+?,Prefix symbols:#opening;!summary;?comment
+?,Summary Line must be second line:
+?,Summary Prefix (first member): "!"
+?,Summary Value (second member): Resolution of measurement must be reflected
+?,Summary Resolution (third member): float representation of resolution
+?,this is not a true resolution for uncertainty, so it's just a 0.0...01 type value.
+?,Summary Unit (fourth member): include SI prefix if true to measurement;
+?,for instance "kΩ" or "mm" or "µin"
+?,Summary Uncertainty (fifth member, optional):
+?,Must be greater than or equal to 1 if included
+?,If included must be followed by at least one comma to denote
+?,the same unit as the measurement; then followed by the unit's
+?,SI prefix for the uncertainty.
+?,Summary Uncertainty Unit (sixth member, optional):
+?,Lines with no prefix are uncertainty components
+?,Only decimal resolution is currently supported
+?,Uncertainty components (first member) have no prefix
+?,Type A uncertainty members are strung together
+?,each entry preceded by "~" and followed by the terminating comma
+?,For example "~1.2~1.2~1.3~1.1~1.2"
+?,Type B uncertainty components have no prefix
+?,Source values (second member):
+?,m  = Method       incomplete information; technician training; etc
+?,s  = Standard     cal cert uncert; drift spec; coeff therm exp; etc
+?,u  = UUT          resolution; repeatability; etc
+?,e  = Environment  temperature effects; condensing %RH; etc
+?,Distribution values (third member):
+?,n1 = Normal       k=1
+?,n2 = Normal       k=2
+?,n3 = Normal       k=3
+?,u  = UShaped      k=sqrt(2)
+?,r  = Rectangular  k=sqrt(3)
+?,q  = Quadratic    k=sqrt(5)
+?,t  = Triangular   k=sqrt(6)
+?,Sensitivity Coefficient (fourth member): Integer value
+?,Description (fifth member): Character string; Human readable
+?,should be unique per file
+?,Reference (sixth member, optional): Character string; Human readable
+?,maybe a national standard or document; perhaps a certificate number
+?,Reference URL (seventh member, optional): Character string;
+?,file location such as URL to HTML or PDF document;
+?,reference URL requires Reference member
+?,NO OTHER MEMBERS SUPPORTED AT THIS TIME
+?,Last line in file is the date/time code:
+?,YYYYMMDDHHMMSSmmm:
+?,4-digit year;2-digit month;2-digit day;2-digit hour in 24-hour format;
+?,2-digit minute;2-digit second;3-digit millisecond

@@ -1,0 +1,9 @@
+#,uncertWizard0.0.1
+!,1.200025,0.00001,A
+1.42e-4,s,n2,1,3458A 2Adc,3458A Service Manual,url for service manual
+5e-8,s,r,1,3458A 2Adc,3458A Service Manual, url for service manual
+2.9e-6,s,n2,1,3458 Calibration Certificate, url for cal cert
+5e-6,u,r,1,UUT observation, url for UUT spec sheet
+1e-5,m,r,1,Floating Point Error from calculation using computers, no url
+~1.20003~1.20002~1.20001~1.2~1.20001~1.20001~1.20003~1.20004~1.20001~1.19995,u,n1,1,Repeatability Study
+?,20191105214900000
