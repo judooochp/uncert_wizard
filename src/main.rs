@@ -1,5 +1,4 @@
 use std::io::*;
-use std::fs::File;
 use uncertWizard::*;
 
 fn main() {
