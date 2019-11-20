@@ -1,3 +1,5 @@
+use std::fs::*;
+use std::io::*;
 use std::process;
 use std::f64;
 
@@ -372,6 +374,14 @@ pub fn std_dev_from_line(hld_eval: String) -> f64 {
 //  Divide by n-1 since sample and Return Standard Deviation of a Sample
     let end: f64 = ((f64::sqrt(dev_sum / (n - 1.0))) * 1e10).ceil() as f64 * 1e-10;
     end
+}
+
+pub fn get_file(filename: String) -> Result<String> {
+    let file = File::open(filename)?;
+    let mut buf_read = BufReader::new(file);
+    let mut contents = String::new();
+    buf_read.read_to_string(&mut contents)?;
+    Ok(contents)
 }
 
 #[cfg(test)]
